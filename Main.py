@@ -41,6 +41,10 @@ class nn():
         self.y_pred=self.sigmoid(self.z3)
 
         return self.y_pred
+    
+    def backpropagation(self,x,y):
+        m=y.shape[0]
+
 
  
 hello=nn(2,3,1)
