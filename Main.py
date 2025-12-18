@@ -45,6 +45,17 @@ class nn():
     def backpropagation(self,x,y):
         m=y.shape[0]
 
+        error=self.y_pred-y
+
+        dw3=self.a2.T @ error/m
+        db3=np.mean(error,axis=0,keepdims=True)
+
+
+        da1=error @ self.w3.T
+        dz1=da1*self.relu_derivative(self.z2)
+        dw2=self.a1.T@dz1/m
+        db2=np.mean(dz1,axis=0,keepdims=True)
+
 
  
 hello=nn(2,3,1)
