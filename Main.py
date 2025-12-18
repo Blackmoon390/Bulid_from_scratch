@@ -1,3 +1,1 @@
-print("test")
-k=2
-k=3
+import numpy as np #just used numpy for exponential function and max
