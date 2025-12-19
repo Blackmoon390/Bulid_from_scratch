@@ -1,7 +1,7 @@
 import numpy as np #just used numpy for exponential function and max
 import pandas as pd # for split  training set ,test set
 
-class nn():
+class single_weighted_perceptron():
     def __init__(self,lr=0.001,epoch=3000):
 
         self.lr=lr
