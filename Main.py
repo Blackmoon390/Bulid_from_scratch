@@ -3,6 +3,33 @@ import pandas as pd # for split  training set ,test set
 
 class nn():
     def __init__(self,lr=0.001,epoch=3000):
+
+        self.lr=lr
+        self.epoch=epoch
+
+    def fit(self,x,y):
+
+        m,n=x.shape
+
+        np.random.seed(42)
+        self.w=np.random.randn(n,1)*0.01
+
+        pos=np.sum(y==1)
+        neg=np.sum(y==0)
+
+        self.w1=m/(pos*2)
+        self.w0=m/(neg*2)
+        self.b=0.0
+
+        for _ in range(self.epoch):
+            z=x@self.w+self.b
+            ycap=self.sigmoid(z)
+
+            dz = (self.w1 * y + self.w0 * (1 - y)) * (ycap - y)
+            dw=x.T@dz/m
+            db=np.mean(dz)
+
+            loss=
         
     
     
@@ -11,10 +38,9 @@ class nn():
     
     
   
-    def loss(self, y):
+    def loss(self,ycap, y):
         eps = 1e-9
-        return -np.mean(y*np.log(self.y_pred+eps) +
-                        (1-y)*np.log(1-self.y_pred+eps))
+        -np.mean(self.w1 * y * np.log(ycap + eps) + self.w0 * (1 - y) * np.log(1 - ycap + eps))
         
 
 
