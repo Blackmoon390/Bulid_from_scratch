@@ -2,13 +2,9 @@ import numpy as np #just used numpy for exponential function and max
 import pandas as pd # for split  training set ,test set
 
 class nn():
-    def __init__(self,input_layer,hidden_layer,output_layer,lr=0.001):
+    def __init__(self,lr=0.001,epoch=3000):
         
-    def relu(self,z):
-        return np.maximum(z,0)
     
-    def relu_derivative(self,z):
-        return (z > 0).astype(float)
     
     def sigmoid(self,z):
         return 1/(1+np.exp(-z))
