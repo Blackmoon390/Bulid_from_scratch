@@ -1,8 +1,8 @@
-import numpy as np #just used numpy for exponential function and max
+import numpy as np #just used numpy for mean,random,array
 import pandas as pd # for split  training set ,test set
 
 class single_weighted_perceptron():
-    def __init__(self,lr=0.001,epoch=3000):
+    def __init__(self,lr=0.01,epoch=1000000):
 
         self.lr=lr
         self.epoch=epoch
@@ -31,9 +31,13 @@ class single_weighted_perceptron():
             dw=x.T@dz/m
             db=np.mean(dz)
 
-            if self.epoch%itergap==0:
-                lossval=self.loss(ycap,y)
-                print(lossval)
+            if (_ % itergap == 0):
+                 lossval = self.loss(ycap, y)
+                 print(f"Iteration {_}, Loss: {lossval}")
+
+
+            self.w-=self.lr*dw
+            self.b-=self.lr*db
     
     def sigmoid(self,z):
         return 1/(1+np.exp(-z))
@@ -42,7 +46,14 @@ class single_weighted_perceptron():
   
     def loss(self,ycap, y):
         eps = 1e-9
-        -np.mean(self.w1 * y * np.log(ycap + eps) + self.w0 * (1 - y) * np.log(1 - ycap + eps))
+        return -np.mean(self.w1 * y * np.log(ycap + eps) + self.w0 * (1 - y) * np.log(1 - ycap + eps))
+    
+    def predict(self,x,threshold=0.5):
+        z=x@self.w+self.b
+        act=self.sigmoid(z)
+        return (act >= threshold).astype(int)
+        
+
         
 
 
@@ -50,18 +61,32 @@ class single_weighted_perceptron():
 data=pd.read_csv("dataset2.csv")
 
 x=data.drop(columns=["motor"]).to_numpy()
-y=data["motor"].to_numpy().reshape(-1,1)
-
+y=data["motor"].to_numpy().reshape(-1,1).astype(float)
+meanval=x.mean(axis=0)
+std=x.std(axis=0)+1e-8
+x=(x+meanval)/std
+row,col=data.shape
+x_train,x_test=x[:int(0.7*row),:],x[int(0.7*row):,:]
+y_train,y_test=y[:int(0.7*row),:],y[int(0.7*row):,:]
 print(x.shape,y.shape)
+print(x_train.shape)
 
 
-network=nn(9,16,1,0.001)
+network=single_weighted_perceptron()
+network.fit(x_train,y_train)
+y_pred=network.predict(x_test)
 
-for epoch in range(0,2000):
-    network.forward(x)
-    los=network.loss(y)
-    if epoch%100 ==0:print(los)
-    network.backpropagation(x,y)
+print(np.mean(y_test == y_pred))
+
+from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
+
+sns.heatmap(confusion_matrix(y_test, y_pred),annot=True)
+plt.show()
 
 
 
