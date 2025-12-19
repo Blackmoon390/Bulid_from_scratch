@@ -21,6 +21,8 @@ class nn():
         self.w0=m/(neg*2)
         self.b=0.0
 
+        itergap=self.epoch/10
+
         for _ in range(self.epoch):
             z=x@self.w+self.b
             ycap=self.sigmoid(z)
@@ -29,9 +31,9 @@ class nn():
             dw=x.T@dz/m
             db=np.mean(dz)
 
-            loss=
-        
-    
+            if self.epoch%itergap==0:
+                lossval=self.loss(ycap,y)
+                print(lossval)
     
     def sigmoid(self,z):
         return 1/(1+np.exp(-z))
