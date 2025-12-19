@@ -97,11 +97,4 @@ for epoch in range(0,2000):
 
 
 
-k=[12,0,39,80,24,0,2,3,2]
-
-print(network.forward(k))
-
-
-
-
         
