@@ -1,126 +1,30 @@
-import numpy as np #just used numpy for mean,random,array
-import pandas as pd # for split  training set ,test set
+from flask import Flask, render_template, jsonify
+import time
+import random
 
-class nn():
-    def __init__(self,input_layer=9,hidden_layer=16,output_layer=1,lr=0.01,epochs=100000):
-        np.random.seed(42)
-        self.input_layer=input_layer
-        self.hidden_layer=hidden_layer
-        self.hidden_layer2=8
-        self.output_layer=output_layer
-        self.lr=lr
-        self.epochs=epochs
+app = Flask(__name__)
 
-        self.w1=np.random.randn(self.input_layer,self.hidden_layer)*0.1
-        self.b1=np.zeros((1,self.hidden_layer))
+pump = {
+    "running": False,
+    "start_time": 0,
+    "temperature": 30,
+    "climate": "Normal",
+    "motor": "OFF",
+    "soil": 40,
+    "air": 55,
+    "humidity": 60
+}
 
-        self.w2=np.random.randn(self.hidden_layer,self.hidden_layer2)*0.1
-        self.b2=np.zeros((1,self.hidden_layer2))
+def update_sensors():
+    pump["temperature"] = random.randint(25, 40)
+    pump["soil"] = random.randint(20, 80)
+    pump["air"] = random.randint(30, 70)
+    pump["humidity"] = random.randint(40, 90)
+    pump["climate"] = "Hot" if pump["temperature"] > 35 else "Normal"
 
-        self.w3=np.random.randn(self.hidden_layer2,self.output_layer)*0.1
-        self.b3=np.zeros((1,self.output_layer))
-
-    def relu(self,z):
-        return np.maximum(z,0)
-    
-    def relu_derivative(self,z):
-        return (z > 0).astype(float)
-    
-    def sigmoid(self,z):
-        return 1/(1+np.exp(-z))
-    
-    def forward(self,x):
-        self.z1=x@self.w1+self.b1
-        self.a1=self.relu(self.z1)
-        # print(self.a1)
-
-        self.z2=self.a1@self.w2+self.b2
-        self.a2=self.relu(self.z2)
-        # print(self.a2)
-
-        self.z3=self.a2@self.w3+self.b3
-        self.y_pred=self.sigmoid(self.z3)
-
-        return self.y_pred
-    
-    def backpropagation(self,x,y):
-        m=y.shape[0]
-
-        dz3=self.y_pred-y
-
-        dw3=self.a2.T @ dz3/m
-        db3=np.mean(dz3,axis=0,keepdims=True)
+def running_time():
+    if pump["running"]:
+        return int(time.time() - pump["start_time"])
+    return 0
 
 
-        da2=dz3 @ self.w3.T
-        dz2=da2*self.relu_derivative(self.z2)
-        dw2=self.a1.T @dz2/m
-        db2=np.mean(dz2,axis=0,keepdims=True)
-
-        da1=dz2 @ self.w2.T
-        dz1=da1*self.relu_derivative(self.z1)
-        dw1=x.T@dz1/m
-        db1=np.mean(dz1,keepdims=True,axis=0)
-
-        self.w1-=self.lr*dw1
-        self.w2-=self.lr*dw2
-        self.w3-=self.lr*dw3
-
-        self.b1-=self.lr*db1
-        self.b2-=self.lr*db2
-        self.b3-=self.lr*db3
-    def loss(self, y):
-        eps = 1e-9
-        return -np.mean(y*np.log(self.y_pred+eps) +
-                        (1-y)*np.log(1-self.y_pred+eps))
-    
-    def fit(self,x,y):
-        splitepoch=self.epochs//10
-        for epoch in range(self.epochs):
-            self.forward(x)
-            if (epoch%splitepoch)==0: print(f"epoch:{epoch} loss:",self.loss(y))
-            self.backpropagation(x,y)
-
-    def predict(self,x):
-        y_pred=self.forward(x)
-        return (y_pred > 0.5).astype(int)
-
-
-
- 
-data=pd.read_csv("dataset2.csv")
-
-x=data.drop(columns=["motor"]).to_numpy()
-y=data["motor"].to_numpy().reshape(-1,1).astype(float)
-meanval=x.mean(axis=0)
-std=x.std(axis=0)+1e-8
-x=(x+meanval)/std
-row,col=data.shape
-x_train,x_test=x[:int(0.7*row),:],x[int(0.7*row):,:]
-y_train,y_test=y[:int(0.7*row),:],y[int(0.7*row):,:]
-print(x.shape,y.shape)
-print(x_train.shape)
-
-
-network=nn()
-network.fit(x_train,y_train)
-y_pred=network.predict(x_test)
-
-print(np.mean(y_test == y_pred))
-
-from sklearn.metrics import confusion_matrix, classification_report
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-print(confusion_matrix(y_test, y_pred))
-print(classification_report(y_test, y_pred))
-
-sns.heatmap(confusion_matrix(y_test, y_pred),annot=True)
-plt.show()
-
-
-
-
-
-
-        
