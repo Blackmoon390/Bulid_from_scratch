@@ -2,13 +2,14 @@ import numpy as np #just used numpy for mean,random,array
 import pandas as pd # for split  training set ,test set
 
 class nn():
-    def __init__(self,input_layer,hidden_layer,output_layer,lr=0.001):
+    def __init__(self,input_layer,hidden_layer,output_layer,lr=0.001,epoch=100000):
         np.random.seed(42)
         self.input_layer=input_layer
         self.hidden_layer=hidden_layer
         self.hidden_layer2=8
         self.output_layer=output_layer
         self.lr=lr
+        self.epoch=epoch
 
         self.w1=np.random.randn(self.input_layer,self.hidden_layer)*0.1
         self.b1=np.zeros((1,self.hidden_layer))
@@ -72,6 +73,11 @@ class nn():
         eps = 1e-9
         return -np.mean(y*np.log(self.y_pred+eps) +
                         (1-y)*np.log(1-self.y_pred+eps))
+    
+    def fit(self,x,y):
+        for epoch in range(self.epoch):
+            y=self.forward(x)
+
 
  
 data=pd.read_csv("dataset2.csv")
