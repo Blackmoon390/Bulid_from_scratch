@@ -2,14 +2,14 @@ import numpy as np #just used numpy for mean,random,array
 import pandas as pd # for split  training set ,test set
 
 class nn():
-    def __init__(self,input_layer,hidden_layer,output_layer,lr=0.001,epoch=100000):
+    def __init__(self,input_layer=9,hidden_layer=16,output_layer=1,lr=0.01,epochs=100000):
         np.random.seed(42)
         self.input_layer=input_layer
         self.hidden_layer=hidden_layer
         self.hidden_layer2=8
         self.output_layer=output_layer
         self.lr=lr
-        self.epoch=epoch
+        self.epochs=epochs
 
         self.w1=np.random.randn(self.input_layer,self.hidden_layer)*0.1
         self.b1=np.zeros((1,self.hidden_layer))
@@ -75,8 +75,16 @@ class nn():
                         (1-y)*np.log(1-self.y_pred+eps))
     
     def fit(self,x,y):
-        for epoch in range(self.epoch):
-            y=self.forward(x)
+        splitepoch=self.epochs//10
+        for epoch in range(self.epochs):
+            self.forward(x)
+            if (epoch%splitepoch)==0: print(f"epoch:{epoch} loss:",self.loss(y))
+            self.backpropagation(x,y)
+
+    def predict(self,x):
+        y_pred=self.forward(x)
+        return (y_pred > 0.5).astype(int)
+
 
 
  
@@ -94,7 +102,7 @@ print(x.shape,y.shape)
 print(x_train.shape)
 
 
-network=single_weighted_perceptron()
+network=nn()
 network.fit(x_train,y_train)
 y_pred=network.predict(x_test)
 
