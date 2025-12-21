@@ -1,10 +1,15 @@
 from flask import Flask, render_template, jsonify
 import time
 import random
+import logging  
+
+
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 app = Flask(__name__)
 
-# ------------------ GLOBAL STATE ------------------
+#trail inputs
 pump = {
     "running": False,
     "start_time": None,
@@ -16,7 +21,6 @@ pump = {
     "humidity": 60
 }
 
-# ------------------ HELPERS ------------------
 def update_sensors():
     pump["temperature"] = random.randint(25, 40)
     pump["soil"] = random.randint(20, 80)
@@ -30,7 +34,6 @@ def get_running_time():
         return int(time.time() - pump["start_time"])
     return 0
 
-# ------------------ ROUTES ------------------
 @app.route("/")
 def index():
     return render_template(
@@ -68,6 +71,6 @@ def status():
         "time": get_running_time()
     })
 
-# ------------------ RUN ------------------
+
 if __name__ == "__main__":
     app.run(debug=True)
