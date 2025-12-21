@@ -4,27 +4,70 @@ import random
 
 app = Flask(__name__)
 
+# ------------------ GLOBAL STATE ------------------
 pump = {
     "running": False,
-    "start_time": 0,
+    "start_time": None,
     "temperature": 30,
     "climate": "Normal",
     "motor": "OFF",
-    "soil": 40,
+    "soil": 45,
     "air": 55,
     "humidity": 60
 }
 
+# ------------------ HELPERS ------------------
 def update_sensors():
     pump["temperature"] = random.randint(25, 40)
     pump["soil"] = random.randint(20, 80)
     pump["air"] = random.randint(30, 70)
     pump["humidity"] = random.randint(40, 90)
+
     pump["climate"] = "Hot" if pump["temperature"] > 35 else "Normal"
 
-def running_time():
-    if pump["running"]:
+def get_running_time():
+    if pump["running"] and pump["start_time"]:
         return int(time.time() - pump["start_time"])
     return 0
 
+# ------------------ ROUTES ------------------
+@app.route("/")
+def index():
+    return render_template(
+        "index.html",
+        pump_data={
+            "running": pump["running"]
+        }
+    )
 
+@app.route("/start", methods=["POST"])
+def start_pump():
+    if not pump["running"]:
+        pump["running"] = True
+        pump["start_time"] = time.time()
+        pump["motor"] = "ON"
+    return jsonify(success=True)
+
+@app.route("/stop", methods=["POST"])
+def stop_pump():
+    pump["running"] = False
+    pump["motor"] = "OFF"
+    return jsonify(success=True)
+
+@app.route("/status")
+def status():
+    update_sensors()
+    return jsonify({
+        "running": pump["running"],
+        "motor": pump["motor"],
+        "temperature": pump["temperature"],
+        "climate": pump["climate"],
+        "soil": pump["soil"],
+        "air": pump["air"],
+        "humidity": pump["humidity"],
+        "time": get_running_time()
+    })
+
+# ------------------ RUN ------------------
+if __name__ == "__main__":
+    app.run(debug=True)
