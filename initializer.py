@@ -2,9 +2,6 @@ import geocoder
 
 g = geocoder.ip('me')
 
-print("City       :", g.city)
-print("Latitude   :", g.lat)
-print("Longitude  :", g.lng)
 
 datas=[]
 

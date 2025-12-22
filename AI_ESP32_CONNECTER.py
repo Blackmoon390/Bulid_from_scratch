@@ -1,5 +1,5 @@
 import socket
-import json
+
 
 
 with open("configurations.txt","r") as file:
@@ -7,15 +7,24 @@ with open("configurations.txt","r") as file:
         if line.startswith("ip="):
             ip=line.split("=")[1]
 
-print(ip)
 
 
-
-ESP_IP = "10.20.67.130"
+ESP_IP = ip
 ESP_PORT = 80
 
+def initialize_model_esp32():
+    import json
+    # Load model JSON first
+    with open("model.json") as f:
+        model_json = json.load(f)
+
+
+
+# resp = send_json(model_json)
+# print("ESP32 Response:", resp)
+
 def send_json(data):
-    print(data)
+    
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(20)  # longer timeout for big JSON
     sock.connect((ESP_IP, ESP_PORT))
@@ -34,14 +43,6 @@ def send_json(data):
     sock.close()
     return response.decode('utf-8')
 
-# Load model JSON first
-with open("model.json") as f:
-    model_json = json.load(f)
-
-
-
-resp = send_json(model_json)
-print("ESP32 Response:", resp)
 
 
 
@@ -62,14 +63,14 @@ print("ESP32 Response:", resp)
 # print("ESP32 Response:", resp)
 
 
-data_json = {
-  "type": "manual",
-  "motor": 1
-}
+# data_json = {
+#   "type": "manual",
+#   "motor": 1
+# }
 
 
-resp = send_json(data_json)
-print("ESP32 Response:", resp)
+# resp = send_json(data_json)
+# print("ESP32 Response:", resp)
 
 
 

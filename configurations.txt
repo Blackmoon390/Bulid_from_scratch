@@ -1,0 +1,15 @@
+
+esp32 ip address
+ip="10.20.67.130"
+
+#openweather api key 
+
+API_KEY= "61d43c0deab4691d85f1a30c9be23e88"
+
+#enter your city
+City= "Chennai"
+
+#1:seeding 2:growth 3:flowering
+crop_stage=1
+#0:sandy 1:loamy 2:clay
+soil_type=0
