@@ -9,18 +9,20 @@ import Weather
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
+ai.initialize_model_esp32()
+
 app = Flask(__name__)
 
 
 pump = {
     "running": False,
     "start_time": None,
-    "temperature": 30,
+    "temperature": Weather.temperature,
     "climate": "Normal",
     "motor": "OFF",
     "soil": 45,
-    "air": 55,
-    "humidity": 60,
+    "air": 45,
+    "humidity": Weather.humidity,
     "last_action": "NONE"
 }
 
@@ -95,7 +97,9 @@ def start_pump():
 
 @app.route("/stop", methods=["POST"])
 def stop_pump():
-    ai.send_json(motor_on)
+
+    ai.send_json(motor_off)
+    
     print("🔴 STOP button pressed")
     pump["running"] = False
     pump["motor"] = "OFF"
@@ -104,7 +108,7 @@ def stop_pump():
 
 @app.route("/status")
 def status():
-    update_sensors()
+    # update_sensors()
     return jsonify({
         "running": pump["running"],
         "motor": pump["motor"],
@@ -120,4 +124,4 @@ def status():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0",debug=True)
