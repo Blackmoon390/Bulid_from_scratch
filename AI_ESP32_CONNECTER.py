@@ -1,4 +1,5 @@
 import socket
+import json
 
 
 
@@ -13,7 +14,7 @@ ESP_IP = ip
 ESP_PORT = 80
 
 def initialize_model_esp32():
-    import json
+    
     # Load model JSON first
     with open("model.json") as f:
         model_json = json.load(f)
@@ -42,6 +43,9 @@ def send_json(data):
         pass
     sock.close()
     return response.decode('utf-8')
+
+def monitor_system():
+    while True:
 
 
 
@@ -76,6 +80,3 @@ def send_json(data):
 
 # data={"soil_moisture":20,"weather":0,"tank_capacity":100,"humidity":100,"tempture":26,"rain_forecast":32,"timeofday":2}
 
-
-while True:
-    print("23")
