@@ -36,8 +36,8 @@ motor_off= {
 
 settings = {
     "tank_capacity": 100,
-    "crop_stage": 1,
-    "soil_type": 0
+    "crop_stage": 1,     #1:seeding 2:growth 3:flowering
+    "soil_type": 0        #0:sandy 1:loamy 2:clay
 }
 
 
@@ -84,7 +84,7 @@ def save_settings():
 def start_pump():
     print("🟢 START button pressed")
 
-    ai.send_json
+    ai.send_json(motor_on)
 
     if not pump["running"]:
         pump["running"] = True
@@ -95,6 +95,7 @@ def start_pump():
 
 @app.route("/stop", methods=["POST"])
 def stop_pump():
+    ai.send_json(motor_on)
     print("🔴 STOP button pressed")
     pump["running"] = False
     pump["motor"] = "OFF"
