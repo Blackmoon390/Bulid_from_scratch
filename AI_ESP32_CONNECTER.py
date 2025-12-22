@@ -6,14 +6,14 @@ import json
 with open("configurations.txt","r") as file:
     for line in file:
         if line.startswith("ip="):
-            ip=line.split("=")[1]
+            ip=line.split("=")[1].strip().strip('" ')
 
 
 
 ESP_IP = ip
 ESP_PORT = 80
 
-ESP_MOTOR_STATUS=None
+ESP_MOTOR_STATUS=0
 
 def initialize_model_esp32():
     global ESP_MOTOR_STATUS
@@ -21,7 +21,8 @@ def initialize_model_esp32():
     with open("model.json") as f:
         model_json = json.load(f)
         response=send_json(model_json)
-        ESP_MOTOR_STATUS=response["motor_status"]
+        data=json.loads(response)
+        ESP_MOTOR_STATUS=data["motor_status"]
 
 
 
@@ -85,6 +86,3 @@ def send_json(data):
 
 # data={"soil_moisture":20,"weather":0,"tank_capacity":100,"humidity":100,"tempture":26,"rain_forecast":32,"timeofday":2}
 
-print(ESP_MOTOR_STATUS)
-initialize_model_esp32()
-print(ESP_MOTOR_STATUS)
