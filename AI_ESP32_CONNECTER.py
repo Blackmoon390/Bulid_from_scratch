@@ -75,3 +75,7 @@ def send_json(data):
 
 
 # data={"soil_moisture":20,"weather":0,"tank_capacity":100,"humidity":100,"tempture":26,"rain_forecast":32,"timeofday":2}
+
+
+while True:
+    print("23")
