@@ -13,11 +13,16 @@ with open("configurations.txt","r") as file:
 ESP_IP = ip
 ESP_PORT = 80
 
+ESP_MOTOR_STATUS=None
+
 def initialize_model_esp32():
-    
+    global ESP_MOTOR_STATUS
     # Load model JSON first
     with open("model.json") as f:
         model_json = json.load(f)
+        response=send_json(model_json)
+        ESP_MOTOR_STATUS=response["motor_status"]
+
 
 
 
@@ -44,8 +49,8 @@ def send_json(data):
     sock.close()
     return response.decode('utf-8')
 
-def monitor_system():
-    while True:
+# def monitor_system():
+    # while True:
 
 
 
@@ -80,3 +85,6 @@ def monitor_system():
 
 # data={"soil_moisture":20,"weather":0,"tank_capacity":100,"humidity":100,"tempture":26,"rain_forecast":32,"timeofday":2}
 
+print(ESP_MOTOR_STATUS)
+initialize_model_esp32()
+print(ESP_MOTOR_STATUS)
