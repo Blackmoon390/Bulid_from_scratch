@@ -13,7 +13,7 @@ with open("configurations.txt","r") as file:
 ESP_IP = ip
 ESP_PORT = 80
 
-ESP_MOTOR_STATUS=0
+ESP_MOTOR_STATUS=None
 
 def initialize_model_esp32():
     global ESP_MOTOR_STATUS

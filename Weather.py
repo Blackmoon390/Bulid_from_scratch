@@ -1,10 +1,12 @@
 import requests
 from datetime import datetime
 
-def get_weather_data(api_key, city):
-    url = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={api_key}&units=metric"
+def get_weather_data():
+    url = f"https://api.openweathermap.org/data/2.5/forecast?q={CITY}&appid={API_KEY}&units=metric"
     response = requests.get(url)
     data = response.json()
+
+    global climate
 
     if data.get("cod") != "200":
         return {"error": "API error or city not found"}
@@ -51,10 +53,15 @@ def get_weather_data(api_key, city):
         "rain_forecast": rain_forecast,
         "time_of_day": time_of_day
     }
+with open("configurations.txt","r") as file:
+    for line in file:
+        if line.startswith("API_KEY="):
+            API_KEY=line.split("=",1)[1].strip().strip('" "')
+        if line.startswith("City="):
+            CITY=line.split("=",1)[1].strip().strip('" "')
 
 
-API_KEY = ""
-CITY = "Chennai"
 
-dataset = get_weather_data(API_KEY, CITY)
-print(dataset)
+
+
+
