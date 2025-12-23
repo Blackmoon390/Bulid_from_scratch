@@ -11,9 +11,10 @@ with open("configurations.txt","r") as file:
             ip=line.split("=")[1].strip().strip('" ')
 
 Weatherdata=Weather.get_weather_data()
+datam=["soilmoisture",Weatherdata["weather"],update_sensor_input()[0],Weatherdata["humidity"],Weatherdata["temperature"],Weatherdata["rain_forecast"],Weatherdata["time_of_day"]]
 
 
-datam=["soilmoisture",Weatherdata["weather"],"capacity",Weatherdata["humidity"],Weatherdata["temperature"],Weatherdata["rain_forecast"],Weatherdata["time_of_day"]]
+
 
 
 
@@ -64,10 +65,13 @@ def update_sensor_input():
             if line.startswith("crop_stage="):
                 crop_stage=line.split("=")[1].strip()
                 crop_stage=int(crop_stage)
-            if line.startswith("crop_stage="):
-                ip=line.split("=")[1].strip()
-            if line.startswith("crop_stage="):
-                ip=line.split("=")[1].strip()
+            if line.startswith("soil_type="):
+                soil_type=line.split("=")[1].strip()
+                soil_type=int(soil_type)
+            if line.startswith("tank_capacity="):
+                tank_capacity=line.split("=")[1].strip()
+                tank_capacity=int(tank_capacity)
+    return tank_capacity,crop_stage,soil_type
 
 
 def monitor_system():
@@ -78,6 +82,9 @@ def monitor_system():
         else:
             # send_json(data)
             time.sleep(30*60)
+
+
+    
 
 
 
@@ -113,3 +120,4 @@ def monitor_system():
 
 # data={"soil_moisture":20,"weather":0,"tank_capacity":100,"humidity":100,"tempture":26,"rain_forecast":32,"timeofday":2}
 
+print(update_sensor_input())
