@@ -20,7 +20,7 @@ app = Flask(__name__)
 
 pump = {
     "running": False if ai.ESP_MOTOR_STATUS == 0 else True,
-    "start_time": None,
+    "start_time": ai.motor_start_time,
     "temperature": data["temperature"],
     "climate": "Normal",
     "motor": "OFF" if ai.ESP_MOTOR_STATUS == 0 else "ON",

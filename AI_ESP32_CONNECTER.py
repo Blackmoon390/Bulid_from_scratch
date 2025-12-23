@@ -36,7 +36,10 @@ Weatherdata=Weather.get_weather_data()
 ESP_IP = ip
 ESP_PORT = 80
 
+
+
 ESP_MOTOR_STATUS=1
+motor_start_time=None
 Soil_Moisture=0
 
 
@@ -44,13 +47,16 @@ model_input_data=[Soil_Moisture,Weatherdata["weather"],update_sensor_input()[0],
 
 
 def initialize_model_esp32():
-    global ESP_MOTOR_STATUS,Soil_Moisture
+    global ESP_MOTOR_STATUS,Soil_Moisture,motor_start_time
     # Load model JSON first
     with open("model.json") as f:
         model_json = json.load(f)
         response=send_json(model_json)
         data=json.loads(response)
+        print(data)
         ESP_MOTOR_STATUS=data["motor_status"]
+        if ESP_MOTOR_STATUS == 1:
+            motor_start_time=time.time()
         Soil_Moisture=data["soil_moisture"]
 
 
@@ -93,13 +99,21 @@ def send_json(data):
 
 
 def monitor_system():
+    global motor_start_time
     while True:
-        if ESP_MOTOR_STATUS == 1:
+        if ESP_MOTOR_STATUS == 0:
             newresponse=send_json(model_input_data)
-            time.sleep(5*60)
-        else:
-            send_json(model_input_data)
+            newresponse=json.loads(newresponse)
+            if newresponse["motor_status"] ==1:
+                motor_start_time=time.time()
             time.sleep(30*60)
+        else:
+            newresponseoff=send_json(model_input_data)
+            newresponseoff=json.loads(newresponseoff)
+            if newresponseoff["motor_status"] != ESP_MOTOR_STATUS:
+                if newresponse["motor_status"] ==1:
+                    motor_start_time=time.time()
+            time.sleep(5*60)
 
 
     
@@ -137,3 +151,6 @@ def monitor_system():
 
 
 # data={"soil_moisture":20,"weather":0,"tank_capacity":100,"humidity":100,"tempture":26,"rain_forecast":32,"timeofday":2}
+
+
+# initialize_model_esp32()
