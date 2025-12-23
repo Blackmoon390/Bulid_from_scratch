@@ -13,3 +13,5 @@ City= "Chennai"
 crop_stage=1
 #0:sandy 1:loamy 2:clay
 soil_type=0
+
+tank_capacity=100

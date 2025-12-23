@@ -34,6 +34,7 @@ def initialize_model_esp32():
 
 
 
+
 # resp = send_json(model_json)
 # print("ESP32 Response:", resp)
 
@@ -56,6 +57,17 @@ def send_json(data):
         pass
     sock.close()
     return response.decode('utf-8')
+
+def update_sensor_input():
+    with open("configurations.txt","r") as file:
+        for line in file:
+            if line.startswith("crop_stage="):
+                ip=line.split("=")[1].strip()
+            if line.startswith("crop_stage="):
+                ip=line.split("=")[1].strip()
+            if line.startswith("crop_stage="):
+                ip=line.split("=")[1].strip()
+
 
 def monitor_system():
     while True:
