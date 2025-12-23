@@ -62,7 +62,8 @@ def update_sensor_input():
     with open("configurations.txt","r") as file:
         for line in file:
             if line.startswith("crop_stage="):
-                ip=line.split("=")[1].strip()
+                crop_stage=line.split("=")[1].strip()
+                crop_stage=int(crop_stage)
             if line.startswith("crop_stage="):
                 ip=line.split("=")[1].strip()
             if line.startswith("crop_stage="):
