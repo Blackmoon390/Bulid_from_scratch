@@ -95,7 +95,7 @@ def send_json(data):
 def monitor_system():
     while True:
         if ESP_MOTOR_STATUS == 1:
-            send_json(model_input_data)
+            newresponse=send_json(model_input_data)
             time.sleep(5*60)
         else:
             send_json(model_input_data)

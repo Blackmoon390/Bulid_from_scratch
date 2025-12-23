@@ -24,7 +24,7 @@ pump = {
     "temperature": data["temperature"],
     "climate": "Normal",
     "motor": "OFF" if ai.ESP_MOTOR_STATUS == 0 else "ON",
-    "soil": 45,
+    "soil": "Not Connected" if ai.Soil_Moisture == 0 else ai.Soil_Moisture,
     "air": 45,
     "pippe":56,
     "humidity": data["humidity"],
@@ -129,9 +129,9 @@ def status():
 
 
 if __name__ == "__main__":
-    # if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    #     t = threading.Thread(target=ai.monitor_system())
-    #     t.daemon = True
-    #     t.start()
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        t = threading.Thread(target=ai.monitor_system())
+        t.daemon = True
+        t.start()
 
     app.run(host="0.0.0.0",debug=True)
