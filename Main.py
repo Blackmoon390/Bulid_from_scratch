@@ -13,7 +13,7 @@ log.setLevel(logging.ERROR)
 
 ai.initialize_model_esp32()
 
-data=Weather.get_weather_data
+data=Weather.get_weather_data()
 
 app = Flask(__name__)
 
