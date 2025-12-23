@@ -5,12 +5,13 @@ import logging
 import AI_ESP32_CONNECTER as ai
 import Weather
 import threading
+import os
 
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-# ai.initialize_model_esp32()
+ai.initialize_model_esp32()
 
 data=Weather.get_weather_data
 
@@ -20,13 +21,13 @@ app = Flask(__name__)
 pump = {
     "running": False if ai.ESP_MOTOR_STATUS == 0 else True,
     "start_time": None,
-    "temperature": Weather.temperature,
+    "temperature": data["temperature"],
     "climate": "Normal",
     "motor": "OFF" if ai.ESP_MOTOR_STATUS == 0 else "ON",
     "soil": 45,
     "air": 45,
     "pippe":56,
-    "humidity": Weather.humidity,
+    "humidity": data["humidity"],
     "last_action": "NONE"
 }
 
@@ -128,4 +129,9 @@ def status():
 
 
 if __name__ == "__main__":
+    # if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    #     t = threading.Thread(target=ai.monitor_system())
+    #     t.daemon = True
+    #     t.start()
+
     app.run(host="0.0.0.0",debug=True)

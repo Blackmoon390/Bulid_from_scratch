@@ -1,5 +1,7 @@
 import socket
 import json
+import time
+import Weather
 
 
 
@@ -8,12 +10,17 @@ with open("configurations.txt","r") as file:
         if line.startswith("ip="):
             ip=line.split("=")[1].strip().strip('" ')
 
+Weatherdata=Weather.get_weather_data()
+
+
+datam=["soilmoisture",Weatherdata["weather"],"capacity",Weatherdata["humidity"],Weatherdata["temperature"],Weatherdata["rain_forecast"],Weatherdata["time_of_day"]]
+
 
 
 ESP_IP = ip
 ESP_PORT = 80
 
-ESP_MOTOR_STATUS=None
+ESP_MOTOR_STATUS=1
 
 def initialize_model_esp32():
     global ESP_MOTOR_STATUS
@@ -50,8 +57,15 @@ def send_json(data):
     sock.close()
     return response.decode('utf-8')
 
-# def monitor_system():
-    # while True:
+def monitor_system():
+    while True:
+        if ESP_MOTOR_STATUS == 1:
+            # send_json(data)
+            time.sleep(5*60)
+        else:
+            # send_json(data)
+            time.sleep(30*60)
+
 
 
 
