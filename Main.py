@@ -12,11 +12,13 @@ log.setLevel(logging.ERROR)
 
 # ai.initialize_model_esp32()
 
+data=Weather.get_weather_data
+
 app = Flask(__name__)
 
 
 pump = {
-    "running": False,
+    "running": False if ai.ESP_MOTOR_STATUS == 0 else True,
     "start_time": None,
     "temperature": Weather.temperature,
     "climate": "Normal",
