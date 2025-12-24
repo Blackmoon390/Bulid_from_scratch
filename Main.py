@@ -130,7 +130,7 @@ def status():
 
 if __name__ == "__main__":
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        t = threading.Thread(target=ai.monitor_system())
+        t = threading.Thread(target=ai.monitor_system)
         t.daemon = True
         t.start()
 

@@ -4,153 +4,135 @@ import time
 import Weather
 
 
-
-with open("configurations.txt","r") as file:
+with open("configurations.txt") as file:
     for line in file:
         if line.startswith("ip="):
-            ip=line.split("=")[1].strip().strip('" ')
+            ESP_IP = line.split("=")[1].strip().strip('"')
 
-
-def update_sensor_input():
-    with open("configurations.txt","r") as file:
-        for line in file:
-            if line.startswith("crop_stage="):
-                crop_stage=line.split("=")[1].strip()
-                crop_stage=int(crop_stage)
-            if line.startswith("soil_type="):
-                soil_type=line.split("=")[1].strip()
-                soil_type=int(soil_type)
-            if line.startswith("tank_capacity="):
-                tank_capacity=line.split("=")[1].strip()
-                tank_capacity=int(tank_capacity)
-    return tank_capacity,crop_stage,soil_type
-
-
-Weatherdata=Weather.get_weather_data()
-
-
-
-
-
-
-ESP_IP = ip
 ESP_PORT = 80
 
 
-
-ESP_MOTOR_STATUS=1
-motor_start_time=None
-Soil_Moisture=0
-
-
-model_input_data=[Soil_Moisture,Weatherdata["weather"],update_sensor_input()[0],Weatherdata["humidity"],Weatherdata["temperature"],Weatherdata["rain_forecast"],Weatherdata["time_of_day"],update_sensor_input()[1],update_sensor_input()[2]]
-
-
-def initialize_model_esp32():
-    global ESP_MOTOR_STATUS,Soil_Moisture,motor_start_time
-    # Load model JSON first
-    with open("model.json") as f:
-        model_json = json.load(f)
-        response=send_json(model_json)
-        data=json.loads(response)
-        print(data)
-        ESP_MOTOR_STATUS=data["motor_status"]
-        if ESP_MOTOR_STATUS == 1:
-            motor_start_time=time.time()
-        Soil_Moisture=data["soil_moisture"]
-
-
-# resp = send_json(model_json)
-# print("ESP32 Response:", resp)
+def extract_json(http_response):
+    if "\r\n\r\n" in http_response:
+        return http_response.split("\r\n\r\n", 1)[1]
+    return http_response
 
 def send_json(data):
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(20)
+    body = json.dumps(data)
 
-        sock.connect((ESP_IP, ESP_PORT))
-        sock.sendall(json.dumps(data).encode("utf-8"))
+    request = (
+        "POST / HTTP/1.1\r\n"
+        f"Host: {ESP_IP}\r\n"
+        "Content-Type: application/json\r\n"
+        f"Content-Length: {len(body)}\r\n"
+        "Connection: close\r\n"
+        "\r\n"
+        + body
+    )
 
-        response = b""
-        while True:
-            part = sock.recv(1024)
-            if not part:
-                break
-            response += part
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(20)
+    sock.connect((ESP_IP, ESP_PORT))
+    sock.sendall(request.encode())
 
-        sock.close()
-        return response.decode("utf-8")
+    response = b""
+    while True:
+        part = sock.recv(1024)
+        if not part:
+            break
+        response += part
 
-    except socket.timeout:
-        return "ERROR: Connection timeout"
+    sock.close()
+    return response.decode()
 
-    except ConnectionRefusedError:
-        return "ERROR: ESP32 refused connection"
 
-    except socket.gaierror:
-        return "ERROR: Invalid IP address"
 
-    except json.JSONDecodeError:
-        return "ERROR: JSON encoding failed"
+ESP_MOTOR_STATUS = 0
+motor_start_time = None
+Soil_Moisture = 0
 
-    except Exception as e:
-        return f"ERROR: {str(e)}"
+def initialize_model_esp32():
+    global ESP_MOTOR_STATUS, Soil_Moisture, motor_start_time
 
+    with open("model.json") as f:
+        model_json = json.load(f)
+
+    response = send_json(model_json)
+    data = json.loads(extract_json(response))
+
+    print("MODEL LOAD RESPONSE:", data)
+
+    ESP_MOTOR_STATUS = data["motor_status"]
+    if ESP_MOTOR_STATUS == 1:
+        motor_start_time = time.time()
+
+
+def update_sensor_input():
+    with open("configurations.txt") as file:
+        for line in file:
+            if line.startswith("crop_stage="):
+                crop_stage = int(line.split("=")[1])
+            if line.startswith("soil_type="):
+                soil_type = int(line.split("=")[1])
+            if line.startswith("tank_capacity="):
+                tank_capacity = int(line.split("=")[1])
+    return tank_capacity, crop_stage, soil_type
+
+Weatherdata = Weather.get_weather_data()
+
+model_input_data = {
+    "type": "data",
+    "input": [
+        97,                              # Soil Moisture (sensor later)
+        Weatherdata["weather"],
+        update_sensor_input()[0],
+        Weatherdata["humidity"],
+        Weatherdata["temperature"],
+        Weatherdata["rain_forecast"],
+        Weatherdata["time_of_day"],
+        update_sensor_input()[1],
+        update_sensor_input()[2]
+    ]
+}
 
 
 def monitor_system():
-    global motor_start_time
+    """
+    Continuously checks motor status from the model and updates motor_start_time.
+    Sends data at different intervals:
+    - Motor OFF: every 30 minutes
+    - Motor ON: every 5 minutes
+    """
+    global motor_start_time, ESP_MOTOR_STATUS
+
     while True:
+        response = send_json(model_input_data)  # use your global model_input_data
+        try:
+            data = json.loads(extract_json(response))
+        except json.JSONDecodeError:
+            print("Invalid JSON:", response)
+            time.sleep(60)  # retry sooner
+            continue
+
+        print("AUTO RESPONSE:", data)
+
+        motor_status = data.get("motor_status", 0)
+
+        # Motor turned ON
+        if motor_status == 1 and ESP_MOTOR_STATUS == 0:
+            motor_start_time = time.time()
+            print("Motor started at:", motor_start_time)
+
+        # Motor turned OFF
+        if motor_status == 0 and ESP_MOTOR_STATUS == 1:
+            print("Motor stopped. Last start time:", motor_start_time)
+            motor_start_time = None
+
+        ESP_MOTOR_STATUS = motor_status  # update global motor status
+
+        # Sleep depending on motor status
         if ESP_MOTOR_STATUS == 0:
-            newresponse=send_json(model_input_data)
-            newresponse=json.loads(newresponse)
-            if newresponse["motor_status"] ==1:
-                motor_start_time=time.time()
-            time.sleep(30*60)
+            time.sleep(30 * 60)  # 30 minutes if motor OFF
         else:
-            newresponseoff=send_json(model_input_data)
-            newresponseoff=json.loads(newresponseoff)
-            if newresponseoff["motor_status"] != ESP_MOTOR_STATUS:
-                if newresponse["motor_status"] ==1:
-                    motor_start_time=time.time()
-            time.sleep(5*60)
+            time.sleep(5 * 60)   # 5 minutes if motor ON
 
-
-    
-
-
-
-
-
-# data_json = {
-#     "type": "data",
-#     "input": [68,0,38,47,18,0,0,3,0]  # example sensor values
-# }
-
-# resp = send_json(data_json)
-# print("ESP32 Response:", resp)
-
-# data_json = {
-#     "type": "data",
-#     "input": [27,1,55,57,31,0,2,1,1]  # example sensor values
-# }
-
-# resp = send_json(data_json)
-# print("ESP32 Response:", resp)
-
-
-# data_json = {
-#   "type": "manual",
-#   "motor": 1
-# }
-
-
-# resp = send_json(data_json)
-# print("ESP32 Response:", resp)
-
-
-
-# data={"soil_moisture":20,"weather":0,"tank_capacity":100,"humidity":100,"tempture":26,"rain_forecast":32,"timeofday":2}
-
-
-# initialize_model_esp32()
