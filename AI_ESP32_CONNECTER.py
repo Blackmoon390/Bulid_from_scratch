@@ -49,6 +49,9 @@ def send_json(data):
 
 ESP_MOTOR_STATUS = 0
 motor_start_time = None
+if ESP_MOTOR_STATUS ==1:
+    motor_start_time=time.time()
+
 Soil_Moisture = 0
 
 def initialize_model_esp32():
