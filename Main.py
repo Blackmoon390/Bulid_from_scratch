@@ -105,7 +105,7 @@ def stop_pump():
 
     ai.send_json(motor_off)
     
-    print("🔴 STOP button pressed")
+    # print("🔴 STOP button pressed")
     pump["running"] = False
     pump["motor"] = "OFF"
     pump["last_action"] = "STOP"
