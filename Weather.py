@@ -6,7 +6,7 @@ def get_weather_data():
     response = requests.get(url)
     data = response.json()
 
-    global climate
+    
 
     if data.get("cod") != "200":
         return {"error": "API error or city not found"}
@@ -51,7 +51,8 @@ def get_weather_data():
         "humidity": avg_humidity,
         "temperature": avg_temp,
         "rain_forecast": rain_forecast,
-        "time_of_day": time_of_day
+        "time_of_day": time_of_day,
+        "climate":climate
     }
 with open("configurations.txt","r") as file:
     for line in file:
@@ -59,6 +60,8 @@ with open("configurations.txt","r") as file:
             API_KEY=line.split("=",1)[1].strip().strip('" "')
         if line.startswith("City="):
             CITY=line.split("=",1)[1].strip().strip('" "')
+
+
 
 
 
