@@ -85,7 +85,7 @@ Weatherdata = Weather.get_weather_data()
 model_input_data = {
     "type": "data",
     "input": [
-        97,                              # Soil Moisture (sensor later)
+        0,                              # Soil Moisture (sensor later)
         Weatherdata["weather"],
         update_sensor_input()[0],
         Weatherdata["humidity"],
