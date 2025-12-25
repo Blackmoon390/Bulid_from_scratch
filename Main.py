@@ -85,7 +85,6 @@ def save_settings():
 
 @app.route("/start", methods=["POST"])
 def start_pump():
-    # print("🟢 START button pressed")
 
     ai.send_json(motor_on)
 
