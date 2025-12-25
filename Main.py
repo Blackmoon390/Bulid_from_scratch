@@ -80,7 +80,6 @@ def save_settings():
 
     
     print("⚙️ SETTINGS SAVED")
-    print("Tank Capacity :", settings["tank_capacity"], "%")
     print("Crop Stage    :", settings["crop_stage"])
     print("Soil Type     :", settings["soil_type"])
     print("--------------------------")
