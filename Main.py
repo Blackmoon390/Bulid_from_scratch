@@ -81,7 +81,6 @@ def save_settings():
     
     print("⚙️ SETTINGS SAVED")
     print("Crop Stage    :", settings["crop_stage"])
-    print("Soil Type     :", settings["soil_type"])
     print("--------------------------")
 
     return jsonify(success=True)
