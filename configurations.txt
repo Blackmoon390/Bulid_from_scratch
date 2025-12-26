@@ -1,10 +1,12 @@
 
 esp32 ip address
+# replace your esp32 ip addres example "10.20.67.130"
 ip="10.20.67.130"
 
 #openweather api key 
 
-API_KEY= 
+#replace your apikey  example "34e55d430e2e"
+API_KEY= ""
 
 #enter your city
 City= "Chennai"
