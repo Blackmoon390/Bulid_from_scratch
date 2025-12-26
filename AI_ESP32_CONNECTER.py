@@ -130,7 +130,7 @@ def monitor_system():
             print("Motor stopped. Last start time:", motor_start_time)
             motor_start_time = None
 
-        ESP_MOTOR_STATUS = motor_status  #
+        ESP_MOTOR_STATUS = motor_status  
 
         # Sleep depending on motor status
         if ESP_MOTOR_STATUS == 0:
