@@ -79,7 +79,7 @@ def save_settings():
     settings["soil_type"] = int(data["soil_type"])
 
     
-    print("⚙️ SETTINGS SAVED")
+    
 
     return jsonify(success=True)
 
