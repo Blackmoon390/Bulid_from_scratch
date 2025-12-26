@@ -1,4 +1,9 @@
 import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import json
+
 
 class single_weighted_perceptron():
     def __init__(self,lr=0.01,epoch=100000):
@@ -51,4 +56,22 @@ class single_weighted_perceptron():
         z=x@self.w+self.b
         act=self.sigmoid(z)
         return (act >= threshold).astype(int)
-        
+    
+
+    
+def confusion_matrix(y, y_pred):
+    tp, tn, fp, fn = 0, 0, 0, 0
+
+    for actual, pred in zip(y, y_pred):
+        if actual == 1 and pred == 1:
+            tp += 1
+        elif actual == 0 and pred == 0:
+            tn += 1
+        elif actual == 0 and pred == 1:
+            fp += 1
+        elif actual == 1 and pred == 0:
+            fn += 1
+
+    return [[tn, fp],
+            [fn, tp]]
+
