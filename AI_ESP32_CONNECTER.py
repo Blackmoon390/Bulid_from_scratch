@@ -120,17 +120,17 @@ def monitor_system():
 
         motor_status = data.get("motor_status", 0)
 
-        # Motor turned ON
+       
         if motor_status == 1 and ESP_MOTOR_STATUS == 0:
             motor_start_time = time.time()
             print("Motor started at:", motor_start_time)
 
-        # Motor turned OFF
+        
         if motor_status == 0 and ESP_MOTOR_STATUS == 1:
             print("Motor stopped. Last start time:", motor_start_time)
             motor_start_time = None
 
-        ESP_MOTOR_STATUS = motor_status  # update global motor status
+        ESP_MOTOR_STATUS = motor_status  #
 
         # Sleep depending on motor status
         if ESP_MOTOR_STATUS == 0:
