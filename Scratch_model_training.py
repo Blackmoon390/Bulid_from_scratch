@@ -5,7 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import json
 
-data=pd.read_csv("dataset2.csv")
+data=pd.read_csv("crop_dataset.csv")
 
 x=data.drop(columns=["motor"]).to_numpy()
 y=data["motor"].to_numpy().reshape(-1,1).astype(float)
@@ -38,13 +38,7 @@ plt.show()
 mean=x.mean(axis=0)
 std=x.std(axis=0) + 1e-9
 
-weights = {
-    "type": "model",
-
-    "mean": mean.tolist(),
-    "std": std.tolist(),
-    "w1":network.w.tolist(),
-    "b1":network.b}
+w
 
 with open("model.json","w") as file:
     json.dump(weights,file)
