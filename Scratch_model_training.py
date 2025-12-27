@@ -29,7 +29,7 @@ sns.heatmap(cm, annot=True, fmt=".0f", cmap="rocket",
 
 plt.xlabel("Predicted Label")
 plt.ylabel("Actual Label")
-plt.title("Confusion Matrix")
+plt.title("Crop prediction analysis")
 
 plt.tight_layout()                     
 plt.savefig("confusion_matrix.png", dpi=300)
