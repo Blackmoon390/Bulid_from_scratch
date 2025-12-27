@@ -25,7 +25,7 @@ cm=ssp.confusion_matrix(y_test,y_pred)
 
 sns.heatmap(cm, annot=True, fmt=".0f", cmap="rocket",
             xticklabels=["Negative", "Positive"],
-            yticklabels=["Negative", "1 (Positive)"])
+            yticklabels=["Negative", "Positive"])
 
 plt.xlabel("Predicted Label")
 plt.ylabel("Actual Label")
