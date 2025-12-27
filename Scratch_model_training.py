@@ -38,7 +38,13 @@ plt.show()
 mean=x.mean(axis=0)
 std=x.std(axis=0) + 1e-9
 
-w
+weights = {
+    "type": "model",
+
+    "mean": mean.tolist(),
+    "std": std.tolist(),
+    "w1":network.w.tolist(),
+    "b1":network.b}
 
 with open("model.json","w") as file:
     json.dump(weights,file)
