@@ -11,7 +11,7 @@ import os
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-ai.initialize_model_esp32()
+# ai.initialize_model_esp32()
 
 data=Weather.get_weather_data()
 
