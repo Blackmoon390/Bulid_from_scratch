@@ -106,7 +106,7 @@ def stop_pump():
 
 @app.route("/status")
 def status():
-    # update_sensors()
+    update_sensors()
     return jsonify({
         "running": pump["running"],
         "motor": pump["motor"],
